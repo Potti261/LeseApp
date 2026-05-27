@@ -258,10 +258,19 @@
     font-size: 2.8rem;
     font-weight: 800;
     color: var(--dark);
-    min-width: 80px;
+    width: 90px;
     text-align: center;
     line-height: 1;
+    border: none;
+    border-bottom: 3px solid #e0e0f0;
+    background: transparent;
+    outline: none;
+    padding: 0 4px;
+    -moz-appearance: textfield;
   }
+  .minute-display::-webkit-outer-spin-button,
+  .minute-display::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .minute-display:focus { border-bottom-color: var(--dark); }
   .minute-label {
     font-size: 0.8rem;
     color: #9090b0;
@@ -437,12 +446,12 @@
   <div class="input-section" id="readPanel">
     <h3>📖 Wie lange hast du gelesen?</h3>
     <div class="minute-input-wrap">
-      <button class="minute-btn minus" onclick="changeMinutes('read', -5)">−</button>
+      <button class="minute-btn minus" onclick="changeMinutes('read', -1)">−</button>
       <div>
-        <div class="minute-display" id="readMinutes">15</div>
+        <input class="minute-display" id="readMinutes" type="number" min="1" max="999" value="15" oninput="onInputChange('read')">
         <div class="minute-label">Minuten</div>
       </div>
-      <button class="minute-btn plus" onclick="changeMinutes('read', 5)">+</button>
+      <button class="minute-btn plus" onclick="changeMinutes('read', 1)">+</button>
     </div>
     <div class="quick-btns">
       <button class="quick-btn" onclick="setMinutes('read', 10)">10 Min</button>
@@ -460,12 +469,12 @@
   <div class="input-section" id="tvPanel">
     <h3>📺 Wie lange möchtest du fernsehen?</h3>
     <div class="minute-input-wrap">
-      <button class="minute-btn minus" onclick="changeMinutes('tv', -5)">−</button>
+      <button class="minute-btn minus" onclick="changeMinutes('tv', -1)">−</button>
       <div>
-        <div class="minute-display" id="tvMinutes">15</div>
+        <input class="minute-display" id="tvMinutes" type="number" min="1" max="999" value="15" oninput="onInputChange('tv')">
         <div class="minute-label">Minuten</div>
       </div>
-      <button class="minute-btn plus" onclick="changeMinutes('tv', 5)">+</button>
+      <button class="minute-btn plus" onclick="changeMinutes('tv', 1)">+</button>
     </div>
     <div class="quick-btns">
       <button class="quick-btn" onclick="setMinutes('tv', 10)">10 Min</button>
@@ -577,24 +586,28 @@
   }
 
   function changeMinutes(type, delta) {
-    if (type === 'read') {
-      readVal = Math.max(5, readVal + delta);
-      document.getElementById('readMinutes').textContent = readVal;
-    } else {
-      tvVal = Math.max(5, tvVal + delta);
-      document.getElementById('tvMinutes').textContent = tvVal;
-    }
+    const el = document.getElementById(type === 'read' ? 'readMinutes' : 'tvMinutes');
+    const current = parseInt(el.value) || 0;
+    const newVal = Math.max(1, current + delta);
+    el.value = newVal;
+    if (type === 'read') readVal = newVal;
+    else tvVal = newVal;
+    updateUI();
+  }
+
+  function onInputChange(type) {
+    const el = document.getElementById(type === 'read' ? 'readMinutes' : 'tvMinutes');
+    const val = parseInt(el.value) || 1;
+    if (type === 'read') readVal = val;
+    else tvVal = val;
     updateUI();
   }
 
   function setMinutes(type, val) {
-    if (type === 'read') {
-      readVal = val;
-      document.getElementById('readMinutes').textContent = readVal;
-    } else {
-      tvVal = val;
-      document.getElementById('tvMinutes').textContent = tvVal;
-    }
+    const el = document.getElementById(type === 'read' ? 'readMinutes' : 'tvMinutes');
+    el.value = val;
+    if (type === 'read') readVal = val;
+    else tvVal = val;
     updateUI();
   }
 
